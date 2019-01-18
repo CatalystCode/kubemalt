@@ -1,0 +1,30 @@
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: spring-boot-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: spring-boot-api
+  replicas: 3 # tells deployment to run 3 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: spring-boot-api
+    spec:
+      containers:
+      - name: spring-boot-app-api
+        image: <private docker repo>/api:v1.1
+        ports:
+        - containerPort: 8080
+          name: api
+        env:
+          # https://github.com/Microsoft/containers-rest-cosmos-appservice-java/tree/master/api#database
+        - name: DB_CONNSTR # a mongo database connection string (ex: mongodb://db.com/myDb)
+          value: "<DB Connection String>"
+        - name: DB_NAME # a mongo database name (ex: myDb)
+          value: "<DB Name>"
+        - name: EXCLUDE_FILTER # [optional] a (regex capable) list of classes to exclude from loading (ex: TitleRepository,PersonRepository)
+          value: ""
+      imagePullSecrets:
+      - name: regcred # Must be created and configured into kubectl
