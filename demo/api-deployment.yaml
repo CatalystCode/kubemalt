@@ -14,17 +14,37 @@ spec:
     spec:
       containers:
       - name: spring-boot-app-api
-        image: <private docker repo>/api:v1.1
+        image: <private docker repo>/api:v2.1
+        # resources:
+        #   requests:
+        #     memory: "64Mi"
+        #     cpu: "250m"
+        #   limits:
+        #     memory: "128Mi"
+        #     cpu: "500m"
         ports:
         - containerPort: 8080
           name: api
         env:
+        - name: spring.profiles.active
+          value: "production"
           # https://github.com/Microsoft/containers-rest-cosmos-appservice-java/tree/master/api#database
         - name: DB_CONNSTR # a mongo database connection string (ex: mongodb://db.com/myDb)
-          value: "<DB Connection String>"
+          value: ""
         - name: DB_NAME # a mongo database name (ex: myDb)
-          value: "<DB Name>"
+          value: ""
         - name: EXCLUDE_FILTER # [optional] a (regex capable) list of classes to exclude from loading (ex: TitleRepository,PersonRepository)
           value: ""
+        - name: ALLOWED_ORIGIN # For CORS stuff?
+          value: "*"
+          # Not sure which 'name' to use for now. Including both versions. https://github.com/Microsoft/containers-rest-cosmos-appservice-java/blob/master/docs/azureActiveDirectory.md#configure-springdal
+        - name: security.oauth2.resource.jwk.key-set-uri
+          value: "same as below"
+        - name: OAUTH_KEYSET_URI
+          value: "same as above"
+        - name: security.oauth2.resource.id # These break auth check for some reason?
+          value: "same as below"
+        - name: OAUTH_RES_ID # These break auth check for some reason?
+          value: "same as above"
       imagePullSecrets:
       - name: regcred # Must be created and configured into kubectl
