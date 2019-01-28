@@ -29,6 +29,9 @@ Take note of the response (appId and password) for the next step.
 ### Create `regcred` in kubectl with above rbac-sp creds.
 `kubectl create secret docker-registry regcred --docker-server=<private-docker-repo> --docker-username <rbac-appId> --docker-password <rbac-password>`
 
+### Create MongoDB
+TBD - Currently creating CosmosDB through azure portal.
+
 ### Create and deploy kube pod with Secrets (TBD)
 TBD - Create pod with various secrets so sensitive env vars etc. do not need to be copy-pasted all the time.
 - Repository URL
