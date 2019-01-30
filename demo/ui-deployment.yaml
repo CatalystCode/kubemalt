@@ -14,14 +14,14 @@ spec:
     spec:
       containers:
       - name: spring-boot-app-ui
-        image: <private docker repo>/ui:v2.1
+        image: <private docker repo>/ui:v2.0
         resources:
           requests:
             memory: "64Mi"
-            cpu: "250m"
+            cpu: "100m"
           limits:
             memory: "128Mi"
-            cpu: "500m"
+            cpu: "100m"
         ports:
         - containerPort: 8080
           name: ui

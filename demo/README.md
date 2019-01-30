@@ -32,11 +32,18 @@ Take note of the response (appId and password) for the next step.
 ### Create MongoDB
 TBD - Currently creating CosmosDB through azure portal.
 
-### Create and deploy kube pod with Secrets (TBD)
-TBD - Create pod with various secrets so sensitive env vars etc. do not need to be copy-pasted all the time.
+### Create and deploy kube pod with Secrets (Keyvault TBD)
+Run the below script with the proper subsitutions for DB and AzureAD components.
+```
+kubectl create secret generic jackson-secrets \
+--from-literal=DB_CONNSTR='<MongoDB Connection String>' \
+--from-literal=DB_NAME='<MongoDB Database Name>' \
+--from-literal=OAUTH_KEYSET_URI='https://login.microsoftonline.com/common/discovery/keys' \
+--from-literal=OAUTH_RES_ID='<AzureAD App ID URI>'
+```
+
+TBD - Create Keyvault solution with various secrets and env vars:
 - Repository URL
-- `DB_CONNSTR`
-- `DB_NAME`
 - Various AAD Security env vars
 - UI env vars (if we get dynamic injection supported)
 
@@ -70,7 +77,6 @@ docker push <private docker repo>/ui
   - Also update the `ui` image tag/version
 - Update private docker repository `<private docker repo>` in `api-deployment.yaml`.
   - Also update the `api` image tag/version
-- Update `DB_CONNSTR` and `DB_NAME` to point to the CosmosDB/MondoDB created for this project in `api-deployment.yaml`.
 - Optionally, change the number of `replicas` in `ui-deployment.yaml` and `api-deployment.yaml`.
 
 ### Deploy manifests to cluster
@@ -85,6 +91,12 @@ Get the URL/IP from the ui-service: `kubectl get services ui-lb-service`
 - https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 - https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli?view=azure-cli-latest#create-the-service-principal
 - https://www.callicoder.com/spring-boot-docker-example/
+- [Managing Computing Resources](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+- [Assign Memory Resources](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/)
+- [Using a private repository](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
+- [Kubernetes - Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [Kubernetes - Distribute Credentials Securely Using Secrets](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/)
+- 
 
 ## Things that are TODO/TBD
 - Ingress engine for routing and shared IP addresses/urls.
