@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-boot-app-api
-        image: mtarngcontainerregistry.azurecr.io/api:v2.3-prom-jaeger-1.2-debug-from-env
+        image: mtarngcontainerregistry.azurecr.io/api:v2.4.1
         resources:
           requests:
             memory: "64Mi"
@@ -25,7 +25,7 @@ spec:
         ports:
         - containerPort: 8080
           name: api
-        - containerPort: 5005
+        - containerPort: 5005 # Optional port for remote debugging.
           name: jvm-debug
         env:
         - name: spring.profiles.active
