@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: spring-boot-api
-  replicas: 1 # tells deployment to run 3 pods matching the template
+  replicas: 3 # tells deployment to run 3 pods matching the template
   template: # create pods using pod definition in this template
     metadata:
       labels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-boot-app-api
-        image: mtarngcontainerregistry.azurecr.io/api:v2.4.1
+        image: <private docker repo>/api:v2.4.1
         resources:
           requests:
             memory: "64Mi"
