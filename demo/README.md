@@ -96,7 +96,7 @@ Get the URL/IP from the ui-service: `kubectl get services ui-lb-service`
 - [Using a private repository](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
 - [Kubernetes - Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
 - [Kubernetes - Distribute Credentials Securely Using Secrets](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/)
-- 
+- For Jaeger and Debugging help check project wiki.
 
 ## Things that are TODO/TBD
 - Ingress engine for routing and shared IP addresses/urls.

@@ -18,20 +18,22 @@ spec:
     spec:
       containers:
       - name: spring-boot-app-api
-        image: <private docker repo>/api:v2.0
+        image: <private docker repo>/api:v2.4.1
         resources:
           requests:
             memory: "64Mi"
             cpu: "250m"
           limits:
-            memory: "256Mi"
+            memory: "1024Mi"
             cpu: "500m"
         ports:
         - containerPort: 8080
           name: api
+        - containerPort: 5005 # Optional port for remote debugging.
+          name: jvm-debug
         env:
         - name: spring.profiles.active
-          value: "production"
+          value: "development"
           # https://github.com/Microsoft/containers-rest-cosmos-appservice-java/tree/master/api#database
         - name: DB_CONNSTR # a mongo database connection string (ex: mongodb://db.com/myDb)
           valueFrom:
@@ -57,5 +59,9 @@ spec:
             secretKeyRef:
               name: jackson-secrets
               key: OAUTH_RES_ID
+        - name: JAEGER_AGENT_HOST
+          value: "jaeger-agent.jaeger.svc.cluster.local"
+        - name: JAEGER_AGENT_PORT
+          value: "6831"
       imagePullSecrets:
       - name: regcred # Must be created and configured into kubectl
