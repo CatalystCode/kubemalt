@@ -11,7 +11,12 @@ These steps were cobbled together from Walkthrough documents [here](https://gith
 ## Steps
 
 ### Create MALT Kubernetes Cluster
-Through [~~bedrock~~](https://github.com/Microsoft/bedrock) or [Fabrikate](https://github.com/Microsoft/fabrikate).
+Deploy infrastructure through [~~bedrock~~](https://github.com/Microsoft/bedrock) and deploy MALT stack through [Fabrikate](https://github.com/Microsoft/fabrikate).
+
+Currently using [Cloud Native Stack](https://github.com/timfpark/fabrikate-cloud-native/) from [Fabrikate Components](https://github.com/CatalystCode/kubemalt/wiki/Fabrikate-Components). Deployment scripts can be found in the [Wiki](https://github.com/CatalystCode/kubemalt/wiki/Various-helpful-docs-and-bash-scripts-for-Kubernetes-and-Docker-deployments#fabrikate-deployment-commands).
+
+Recommended number of AKS nodes are 7 or 8.
+
 
 ### Configure `kubectl` to point to above cluster
 Through [kubectx & kubens](https://github.com/ahmetb/kubectx) or for Azure:
@@ -84,6 +89,28 @@ docker push <private docker repo>/ui
 
 ### Test deploy by visiting site
 Get the URL/IP from the ui-service: `kubectl get services ui-lb-service`
+
+### Monitoring Endpoints
+```
+kubectl port-forward -n kibana svc/kibana 5601:443
+```
+[Kibana](http://localhost:5601/)
+```
+kubectl port-forward -n prometheus svc/prometheus-server 9090:80
+```
+[Prometheus](http://localhost:9090/)
+```
+kubectl port-forward -n jaeger svc/jaeger-query 4000:80
+```
+[Jaeger](http://localhost:4000/)
+```
+kubectl port-forward -n grafana svc/grafana 3000:80
+kubectl get secret -n grafana grafana -o yaml
+echo '<admin-password>' | base64 --decode
+```
+[Grafana](http://localhost:3000/)
+`username: admin`
+`password: <found above>`
 
 ### Other references and notes
 - Currently having to hardcode some env vars for the `ui` component, dynamic injection is not supported currently.
