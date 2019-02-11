@@ -37,6 +37,8 @@ Take note of the response (appId and password) for the next step.
 ### Create MongoDB
 TBD - Currently creating CosmosDB through azure portal.
 
+**NOTE** - For the "custom" api endpoints to work, you will need to enable the Preview Feature: `Aggregation Pipeline` in CosmosDB. [Link](https://azure.microsoft.com/en-us/blog/azure-cosmosdb-extends-support-for-mongodb-aggregation-pipeline-unique-indexes-and-more/)
+
 ### Create and deploy kube pod with Secrets (Keyvault TBD)
 Run the below script with the proper subsitutions for DB and AzureAD components.
 ```
