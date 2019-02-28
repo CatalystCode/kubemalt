@@ -35,7 +35,40 @@ Take note of the response (appId and password) for the next step.
 `kubectl create secret docker-registry regcred --docker-server=<private-docker-repo> --docker-username <rbac-appId> --docker-password <rbac-password>`
 
 ### Create MongoDB
-TBD - Currently creating CosmosDB through azure portal.
+
+These are condensed steps taken from the [source repo here](https://github.com/Microsoft/containers-rest-cosmos-appservice-java/tree/master/infrastructure/global-resources).
+
+Replace the `<changeme>` values and then execute this script.
+
+```bash
+export RESOURCE_GROUP=<changeme>
+export COSMOSDB_NAME=<changeme>
+export LOCATION=<changeme>
+az group create -n ${RESOURCE_GROUP} -l ${LOCATION}
+az cosmosdb create -n ${COSMOSDB_NAME} -g ${RESOURCE_GROUP} --kind MongoDB
+export DB_CONNSTR=$(az cosmosdb list-connection-strings -n ${COSMOSDB_NAME} -g ${RESOURCE_GROUP} -o tsv --query connectionStrings[0].connectionString)
+
+kubectl create secret generic jackson-secrets \
+--from-literal=DB_CONNSTR=${DB_CONNSTR} \
+--from-literal=DB_NAME=${COSMOSDB_NAME} \
+--from-literal=OAUTH_KEYSET_URI='https://login.microsoftonline.com/common/discovery/keys' \
+--from-literal=OAUTH_RES_ID='notused'
+```
+
+#### Load the data to CosmosDB
+
+```bash
+export COSMOSDB_PASSWORD=$(az cosmosdb list-keys -n ${COSMOSDB_NAME} -g ${RESOURCE_GROUP} -o tsv --query primaryMasterKey)
+echo $COSMOSDB_PASSWORD
+# This downloads fairly quickly the datasets, but takes a LONG time to scrub the data of the \N.  In fact the data scrub seemed to hang for me.
+curl https://raw.githubusercontent.com/Microsoft/containers-rest-cosmos-appservice-java/master/data/getdata.sh >getdata.sh
+sudo chmod +x ./getdata.sh
+./getdata.sh
+# Import of the data works even if the scrub hasn't finished as long as the TSV files are present.  This also takes a LONG time to upload ~2+GB data
+curl https://raw.githubusercontent.com/Microsoft/containers-rest-cosmos-appservice-java/master/data/importdata.sh >importdata.sh
+sudo chmod +x ./importdata.sh
+./importdata.sh
+```
 
 **NOTE** - For the "custom" api endpoints to work, you will need to enable the Preview Feature: `Aggregation Pipeline` in CosmosDB. [Link](https://azure.microsoft.com/en-us/blog/azure-cosmosdb-extends-support-for-mongodb-aggregation-pipeline-unique-indexes-and-more/)
 
