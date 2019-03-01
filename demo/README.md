@@ -27,12 +27,6 @@ az aks get-credentials --resource-group <resource-group-name> --name <kubernetes
 ```
 For the last command put the names of the resource group and cluster, not uuid/guid.
 
-### Create rbac service principal to connect to private image repository
-`az ad sp create-for-rbac --subscription <subscription-guid>`
-Take note of the response (appId and password) for the next step.
-
-### Create `regcred` in kubectl with above rbac-sp creds.
-`kubectl create secret docker-registry regcred --docker-server=<private-docker-repo> --docker-username <rbac-appId> --docker-password <rbac-password>`
 
 ### Create MongoDB
 
@@ -87,43 +81,12 @@ TBD - Create Keyvault solution with various secrets and env vars:
 - Various AAD Security env vars
 - UI env vars (if we get dynamic injection supported)
 
-### Deploy load balancer services
-`kubectl apply -f ui-service.yaml && kubectl apply -f ui-service.yaml`
-This step is currently needed so we can hardcode the `api` IP and expose the `UI` layer.
-
-### Create docker images
-Build the `ui` and `api` components from the `containers-rest-cosmos-appservice-java`, aka. `Jackson`. You should be able to clone and simply run `Docker build .` in the `api` directory.
-
-`ui` requires creating an `.env` file and populating it with relevant env var components needed for Webpack to subsitute in during the build.
-Sample `.env` file:
-```
-WEBPACK_PROP_AAD_CLIENT_ID=<AAD GUID>
-WEBPACK_PROP_API_BASE_URL=http://1.1.1.1:8080
-WEBPACK_PROP_UI_BASEPATH=ui
-```
-WEBPACK_PROP_API_BASE_URL will come from the external IP for the API: `kubectl get services api-lb-service`
-
-### Deploy images to docker repository
-TBD: Private Azure container registry stuff.
-Helpful scripts:
-```
-docker build -t tag-name .
-docker tag tag-name <private docker repo>/ui:<version>
-docker push <private docker repo>/ui
-```
-
-### Configure deployment manifests
-- Update private docker repository `<private docker repo>` in `ui-deployment.yaml`.
-  - Also update the `ui` image tag/version
-- Update private docker repository `<private docker repo>` in `api-deployment.yaml`.
-  - Also update the `api` image tag/version
-- Optionally, change the number of `replicas` in `ui-deployment.yaml` and `api-deployment.yaml`.
 
 ### Deploy manifests to cluster
-`kubectl apply -f ui-deployment.yaml && kubectl apply -f api-deployment.yaml`
+`kubectl apply --recursive -f .`
 
-### Test deploy by visiting site
-Get the URL/IP from the ui-service: `kubectl get services ui-lb-service`
+### Test deployment by visiting site
+Visit the Istio Ingress Gateway External-IP: `kubectl get svc -n istio-system`
 
 ### Monitoring Endpoints
 ```

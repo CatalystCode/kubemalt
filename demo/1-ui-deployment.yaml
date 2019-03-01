@@ -13,8 +13,8 @@ spec:
         app: spring-boot-ui
     spec:
       containers:
-      - name: spring-boot-app-ui
-        image: <private docker repo>/ui:v2.0
+      - name: jackson-ui
+        image: mtarng/jackson-ui:v1.0
         resources:
           requests:
             memory: "64Mi"
@@ -25,14 +25,3 @@ spec:
         ports:
         - containerPort: 8080
           name: ui
-        # Env Vars are currently unused, since they are generated for the UI by webpack at build time. Can we create a microservice to work around this? lol
-        # env:
-        # - name: WEBPACK_PROP_AAD_CLIENT_ID # OAuth provider application ID from Azure Active Directory portal
-        #   value: ""
-        # - name: WEBPACK_PROP_API_BASE_URL # Get API URL? External or Internal?
-        #   value: "http://api-lb-service.default.svc.cluster.local:8080" # Can we use this? - Configured in api-service.yaml. "default" is the name space.
-        #   value: ""
-        # - name: WEBPACK_PROP_UI_BASEPATH # basepath string for which the UI will be served from. This is used for client side routing. 
-        #   value: "ui"
-      imagePullSecrets:
-      - name: regcred # Must be created and configured into kubectl
