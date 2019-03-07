@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: jackson-ui
-        image: mtarng/jackson-ui:v1.0
+        image: mtarng/jackson-ui:v1.1
         resources:
           requests:
             memory: "64Mi"
