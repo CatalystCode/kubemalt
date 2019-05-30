@@ -81,6 +81,14 @@ TBD - Create Keyvault solution with various secrets and env vars:
 - Various AAD Security env vars
 - UI env vars (if we get dynamic injection supported)
 
+### Install helm and add Istio
+
+```
+helm init
+helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com
+helm repo update
+```
+https://github.com/helm/charts/tree/master/incubator/istio#tldr
 
 ### Deploy manifests to cluster
 `kubectl apply --recursive -f .`
