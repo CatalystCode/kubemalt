@@ -90,6 +90,11 @@ helm repo update
 ```
 https://github.com/helm/charts/tree/master/incubator/istio#tldr
 
+*NOTE* If this doesn't work, install istio manually.
+
+https://istio.io/docs/setup/kubernetes/install/helm/
+tested with version [1.1.2](https://github.com/istio/istio/releases/tag/1.1.2)
+
 ### Deploy manifests to cluster
 `kubectl apply --recursive -f .`
 
