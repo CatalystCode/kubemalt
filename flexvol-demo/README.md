@@ -77,7 +77,9 @@ For this example we create keyvault secrets with the mapping:
 * `jackson-db-conn-str`= value for `DB_CONNSTR`
 * `jackson-db-name` = value `DB_NAME`
 
-The flexvolume configuration under [1-api-deployment.yaml](1-api-deployment.yaml#L20-L33) will load the secrets from keyvault, and place them in the container. The [command and args](1-api-deployment.yaml#L37-L38) will overwrite the Docker Entrypoint, we utilize this to load the flexvolume secrets as environmental variables.
+The flexvolume configuration under [1-api-deployment.yaml](1-api-deployment.yaml#L20-L33) will load the secrets from keyvault, and place them in the container. Update the `keyvaultname`, `resourcegroup`, `subscriptionid`, and `tenantid` fields.
+
+The [command and args](1-api-deployment.yaml#L37-L38) will overwrite the Docker Entrypoint, we utilize this to load the flexvolume secrets as environmental variables.
 
 [Relevant issue and documentation.](https://github.com/Azure/kubernetes-keyvault-flexvol/issues/28)
 
