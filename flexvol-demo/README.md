@@ -72,7 +72,8 @@ create secrets for `DB_CONNSTR` and `DB_NAME` as set up in [Create MongoDB](#cre
 
 **Note** - AzureKeyvault only supports alpha numeric characters and dashes, but not underscores.
 
-For this example we created keyvault secrets with the mapping:
+Create the secrets inside the Keyvault that is deployed as a part of the bedrock infrastructure. This guarantees your cluster's Service Principal has read access to the Keyvault.
+For this example we create keyvault secrets with the mapping:
 * `jackson-db-conn-str`= value for `DB_CONNSTR`
 * `jackson-db-name` = value `DB_NAME`
 
