@@ -1,0 +1,27 @@
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: spring-boot-ui-deployment
+spec:
+  selector:
+    matchLabels:
+      app: spring-boot-ui
+  replicas: 3 # tells deployment to run 3 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: spring-boot-ui
+    spec:
+      containers:
+      - name: jackson-ui
+        image: mtarng/jackson-ui:v1.1
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8080
+          name: ui

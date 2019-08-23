@@ -1,0 +1,69 @@
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: spring-boot-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: spring-boot-api
+  replicas: 3 # tells deployment to run 3 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: spring-boot-api
+      annotations:
+        prometheus.io/path: "/api/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+    spec:
+      volumes:
+      - name: jackson-secrets-volume
+        flexVolume:
+          driver: "azure/kv"
+          secretRef:
+            name: kvcreds                                                   # [OPTIONAL] not required if using Pod Identity - SP Credentials
+          options:
+            usepodidentity: "false"                                         # [OPTIONAL] if not provided, will default to "false"
+            keyvaultname: "keyvaultname"                                    # the name of the KeyVault
+            keyvaultobjectnames: jackson-db-name;jackson-db-conn-str        # list of KeyVault object names (semi-colon separated)
+            keyvaultobjecttypes: secret;secret                              # list of KeyVault object types: secret, key or cert (semi-colon separated)
+            keyvaultobjectversions: ""                                      # [OPTIONAL] list of KeyVault object versions (semi-colon separated), will get latest if empty
+            resourcegroup: "keyvault-resource-group"                        # the resource group of the KeyVault
+            subscriptionid: "subscriptionId"                                # the subscription ID of the KeyVault
+            tenantid: "tenantId"                                            # the tenant ID of the KeyVault
+      containers:
+        - name: jackson-api
+          image: mtarng/jackson-api:v1.0
+          command: ["/bin/sh","-c"]
+          args: ["export DB_CONNSTR=$(cat /kvmnt/jackson-db-conn-str); export DB_NAME=$(cat /kvmnt/jackson-db-name); echo hello!; java -agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n -Djava.security.egd=file:/dev/./urandom -jar /spring-dal.jar"] # export flexvolume secrets as environment variables
+          volumeMounts:
+          - name: jackson-secrets-volume
+            mountPath: /kvmnt
+            readOnly: true
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+              name: api
+            - containerPort: 5005 # Optional port for remote debugging.
+              name: jvm-debug
+          env:
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/api"
+            - name: spring.profiles.active
+              value: "development"
+              # https://github.com/Microsoft/containers-rest-cosmos-appservice-java/tree/master/api#database
+            - name: EXCLUDE_FILTER # [optional] a (regex capable) list of classes to exclude from loading (ex: TitleRepository,PersonRepository)
+              value: ""
+            - name: ALLOWED_ORIGIN # For CORS stuff
+              value: "*"
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-agent.jaeger.svc.cluster.local"
+            - name: JAEGER_AGENT_PORT
+              value: "6831"
+      
